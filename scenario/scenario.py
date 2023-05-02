@@ -19,9 +19,7 @@ class Scenario:
         self.doors = env.doors
         self.seat_list = env.seat_list
 
-        self.walls = env.create_walls()
-        self.door_wall = [np.array([(x, 0) for x in np.linspace(0, self.dimensions[0], 300)])]
-
+        self.walls, self.door_walls = env.create_walls()
         self.passenger_list = []
 
         self.states_t = []
@@ -59,9 +57,7 @@ class Scenario:
         self.passenger_list.append(Passenger(x, y, dx, dy, self.env, phase, inf))
 
     def driver(self, x, y, inf=False):
-        """Stores a driver and sets the 'driver_id' equal to its.
-        If a passenger with the same coordinates already exists it just sets the 'driver_id' equal to its.
-        """
+        """Stores a driver."""
         self.passenger(x, y, x - 0.01, y, phase=-1, inf=inf)
 
     def _door_selection(self, doors_prob, n_in):
@@ -107,7 +103,7 @@ class Scenario:
         self.update_states()
 
         # block the doors until they are opened
-        self.walls_doors_closed = sfm.PedSpacePotential(self.walls + self.door_wall, u0=U0_E, r=R_E)
+        self.walls_doors_closed = sfm.PedSpacePotential(self.walls + self.door_walls, u0=U0_E, r=R_E)
         self.walls_doors_open = sfm.PedSpacePotential(self.walls, u0=U0_E, r=R_E)
         standing_boundaries = sfm.PedSpacePotential(self.standing_boundaries, u0=U0_SB, r=R_SB)
         passenger_force = sfm.PedPedPotential(self.delta_t, v0=V0, sigma=PEDPED_SIGMA)

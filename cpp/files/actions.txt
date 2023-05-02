@@ -1,0 +1,47 @@
+# Comments are achieved with '#' as the first character
+# The supported actions are duration, passenger, spawn, remove, open_doors,
+#
+# Actions are written as such -> 'STEP'|'ACTION':'ARGUMENTS'
+#   -> 'STEP' (int) being the step in which the action will take place 
+#   -> 'ACTION' (str) being the action name (one of {duration, passenger, spawn, remove, open_doors})
+#   -> 'ARGUMENTS' being the arguments (double values first, vectors of double afterwards)
+#
+# duration: sets the simulation duration steps
+#           the 'STEP' is ignored by the parser
+#           but should be included in order to avoid errors
+#           it's recommended to be set to zero
+#           example -> 0|duration:3000 (duration of 3000 steps)
+#
+# passenger: creates a passenger
+#            arguments -> x, y, dx, dy, phase, inf
+#            with x, y: being location coordinates (double)
+#                 dx, dy: being destination coordinates (double)
+#                 phase: the current phase of the passenger (int) (set to -1 for driver, 0 for auto)
+#                 inf: 1 if the passenger is a source of infection, 0 otherwise (int)
+#            example -> 0|passenger:0.5,0.3,5.0,2.0,1,1 
+#
+# spawn: spawns passengers outside the vehicle and opens the doors for them to enter
+#            arguments -> n_in, n_source, doors_prob
+#            with n_in: number of passengers entering (int)
+#                 n_source: number of which transfer the infection (must be <=n_in)(int)
+#                 doors_prob: the distribution of passengers to the doors (must have length equal to doors) (must add up to 1) (vector of double)
+#            example -> 12|spawn:10,2,{0.9, 0.1} 
+#               (spawns 10 passengers of which 2 transmit the infection at step 12)
+#               (most of them are spawned under the first of the two doors)
+#
+# remove: removes passengers from the environment (should be coupled with 'open_doors' some steps later (recommended 50))
+#            arguments -> n
+#            with n: number of passengers exiting (int)
+#            example -> 20|remove:10 (removes 10 passengers at step 12)
+#
+# open_doors: open_doors
+#            example -> 20|open_doors: (opens doors at step 20)
+#
+# Full example bellow (must be run on a three door environment):
+#
+0|duration:1500
+#0|passenger:17,2.1,17,2.1,-1,0
+0|spawn:65,5,{0.3, 0.4, 0.3}
+400|spawn:20,1,{0.3, 0.4, 0.3}
+600|remove:31
+650|open_doors:

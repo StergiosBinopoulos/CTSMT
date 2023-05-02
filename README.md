@@ -70,7 +70,7 @@ bus.obstacle_polyline((0.9, 0.9),
 ```
 
 
-### 3. Create a Scenario
+### 3. Create a scenario
 
 Create a new scenario instance based on the environment defined previously. 
 ```python
@@ -136,8 +136,56 @@ animate.animation()
 ```
 
 
-See more in the 'examples' directory.
+See more in the "examples" directory.
 
 ## Parameter Tuning
 
-Simulation parameters can be found inside the 'parameters.py' module and tuned as needed to achieve the desired results. For example by setting the MADJ parameter to 0, a policy can be simulated in which passengers will not select a seat if the adjacent seat is occupied.
+Simulation parameters can be found inside the "parameters.py" module and tuned as needed to achieve the desired results. For example by setting the MADJ parameter to 0, a policy can be simulated in which passengers will not select a seat if the adjacent seat is occupied.
+
+## Using the C++ Core
+Using the C++ core produces faster results for passenger numbers <200. The C++ core configures the simulation based on three input files; "conditions.txt", "parameters.txt" and "actions.txt" located in the "cpp/files" directory and outputs the results to the "state.txt" file located in the same directory. The user defines actions that would take place in the simulation inside the "actions.txt" file, the other two input files can be exported directly from Python using the functions defined in the "utils.py" module.
+
+See more in the "actions.txt" file. 
+
+### 1.  Compiling
+Inside the "cpp" directory (using gnu make and gcc)
+
+```
+make && make clean
+```
+
+### 2. Extracting the required files
+Create a new python file and import the required modules and export the input files in the correct directory ("cpp/files").
+```python
+import sys
+import os
+import subprocess
+
+filepath = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(filepath))
+
+from utils import read_states, export_environment, export_parameters
+from animation import AnimateSimulation
+from busenvironments import citaro_g_3_door
+from parameters import *
+
+export_parameters(filepath + "/../cpp/files/parameters.txt")
+export_environment(citaro_g_3_door, filepath + "/../cpp/files/conditions.txt")
+```
+
+### 3. Calling the C++ core and reading the results
+```python
+executable_path = filepath + "/../cpp/core"
+subprocess.call(executable_path, cwd=filepath+'/../cpp')
+states = read_states(filepath + "/../cpp/files/states.txt")
+```
+(If you're using windows you should change the 'executable_path' accordingly (core.exe).)
+
+
+### 4. Animating the simulation
+
+```python
+animate = AnimateSimulation(citaro_g_3_door, states,  delta_t=DELTA_T)
+animate.animation()
+```
+See more in the "examples/cpp_core_example.py" file. 

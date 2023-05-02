@@ -134,8 +134,25 @@ class AnimateSimulation:
         infected = []
 
         for state in self.states:
-            source_cases_id = state[:, 3] == 2
-
+            if len(state) == 0:
+                x.append(np.array([-10]))
+                y.append(np.array([-10]))
+                probabilities.append(np.array([0]))
+                infected.append(np.array([0]))
+                source_x.append(np.array([-10]))
+                source_y.append(np.array([-10]))
+                continue
+            
+            try:
+                source_cases_id = state[:, 3] == 2
+            except:
+                x.append(state[:, 0])
+                y.append(state[:, 1])
+                probabilities.append(state[:, 2])
+                infected.append(state[:, 3])
+                source_x.append(np.array([-10]))
+                source_y.append(np.array([-10]))
+                continue
             x.append(state[:, 0][~source_cases_id])
             y.append(state[:, 1][~source_cases_id])
             probabilities.append(state[:, 2][~source_cases_id])
@@ -168,9 +185,15 @@ class AnimateSimulation:
         self.frame_number = self.fig.text(0.85, 0.935, '', fontsize=12, va='center', color='black', font=font)
 
     def show_passengers(self):
+        max_val = 0
+        for c in self.c:
+            current_val = max(c)
+            if (max_val < current_val):
+                max_val = current_val
+
         self.passengers_scatter = self.ax.scatter(self.p_data['x'][0], self.p_data['y'][0], c=self.c[0], s=200,
-                                                  marker='o', cmap='plasma', vmin=0, vmax=max(self.c[-1])+0.0001,
-                                                  zorder=3, ec='k')
+                                                marker='o', cmap='plasma', vmin=0, vmax=max_val,
+                                                zorder=3, ec='k')
 
     def show_standing_spots(self):
         spots = self.ax.scatter(self.standing_spots[:, 0], self.standing_spots[:, 1], c='red', s=100, zorder=4)

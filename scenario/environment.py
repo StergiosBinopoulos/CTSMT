@@ -18,6 +18,7 @@ class Environment:
         self.standing_spots = []
         self.doors = []
         self.walls = []
+        self.door_walls = []
         self.standing_boundaries = []
         self.obstacle_objects = []
         
@@ -97,7 +98,7 @@ class Environment:
     def create_walls(self):
         """Adds walls based on the seats the doors and the boundary data of the environment."""
         if self.created:
-            return self.walls
+            return self.walls, self.door_walls
         
         for seat in self.seat_list:
             theta = seat.rotation*np.pi/180
@@ -134,4 +135,6 @@ class Environment:
         self.obstacle_line((x2, 0), (x2, y2))
         self.created = True
 
-        return self.walls
+        self.door_walls = [np.array([(x, 0) for x in np.linspace(0, self.dimensions[0], 300)])]
+
+        return self.walls, self.door_walls

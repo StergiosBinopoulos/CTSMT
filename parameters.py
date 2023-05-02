@@ -34,7 +34,7 @@ MAX_SPEED_MULTIPLIER = 1.3
 # Angle of Sight (degrees)
 TWOPHI = 200
 # Out of View factor
-C = 0.5
+C = 1
 # Relaxation Time
 TAU = 0.5
 
